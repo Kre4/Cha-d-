@@ -8,13 +8,15 @@ import retrofit2.Retrofit
 
 object ChadApiFactory {
 
+    val clientInstance by lazy { create() }
+
     private const val BASE_URL = "https://faerytea.name/" // http://213.189.221.170:8008/  ??
 
     private val json = Json {
         ignoreUnknownKeys = true
     }
 
-    fun create(
+    private fun create(
         okHttpClient: OkHttpClient = OkHttpClient(),
         baseUrl: String = BASE_URL,
     ): ChadApi {
@@ -25,4 +27,6 @@ object ChadApiFactory {
             .build()
             .create(ChadApi::class.java)
     }
+
+
 }
