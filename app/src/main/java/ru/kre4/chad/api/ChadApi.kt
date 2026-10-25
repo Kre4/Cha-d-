@@ -15,7 +15,7 @@ interface ChadApi {
     suspend fun getMessages(
         @Path("name") name: String,
         @Query("limit") limit: Int = 20,
-        @Query("lastKnownId") lastKnownId: Long = 0,
+        @Query("lastKnownId") lastKnownId: Long? = null,
         @Query("reverse") reverse: Boolean = false,
     ): List<Message>
 
