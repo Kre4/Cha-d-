@@ -8,15 +8,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.kre4.chad.model.ChannelsViewModel
 import ru.kre4.chad.model.ChatViewModel
+import ru.kre4.chad.model.MainViewModel
 import ru.kre4.chad.ui.theme.ChadTheme
 import ru.kre4.chad.view.ChannelsView
 import ru.kre4.chad.view.ChatView
+import ru.kre4.chad.view.FullscreenImage
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,26 +25,39 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ChadTheme {
-                var selectedChannel by remember { mutableStateOf<String?>(null) }
-                val channelsVm = remember { ChannelsViewModel() }
+                val mainVm: MainViewModel = viewModel()
+                val channelsVm: ChannelsViewModel = viewModel()
+                val uiState by mainVm.uiState.collectAsStateWithLifecycle()
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    val channel = selectedChannel
+                    val channel = uiState.selectedChannel
                     if (channel == null) {
                         ChannelsView(
                             vm = channelsVm,
-                            onChannelClick = { selectedChannel = it },
+                            onChannelClick = mainVm::openChannel,
                             modifier = Modifier.padding(innerPadding),
                         )
                     } else {
-                        val chatVm = remember(channel) { ChatViewModel(channel) }
+                        val chatVm: ChatViewModel = viewModel(
+                            key = channel,
+                        ) {
+                            ChatViewModel(channel)
+                        }
                         ChatView(
                             channelName = channel,
                             vm = chatVm,
-                            onBackToChannels = { selectedChannel = null },
+                            onBackToChannels = mainVm::closeChannel,
+                            onImageClick = mainVm::openImage,
                             modifier = Modifier.padding(innerPadding),
                         )
                     }
+                }
+
+                uiState.fullscreenImageLink?.let { link ->
+                    FullscreenImage(
+                        link = link,
+                        onDismiss = mainVm::closeImage,
+                    )
                 }
             }
         }

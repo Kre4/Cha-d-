@@ -35,11 +35,11 @@ fun ChatView(
     channelName: String,
     vm: ChatViewModel,
     onBackToChannels: () -> Unit,
+    onImageClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val messages by vm.messages.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
-    var fullscreenLink by remember { mutableStateOf<String?>(null) }
     var didInitialScroll by remember(channelName) { mutableStateOf(false) }
 
     LaunchedEffect(listState, messages) {
@@ -88,18 +88,11 @@ fun ChatView(
                 items(messages, key = { it.id }) { message ->
                     MessageItem(
                         message = message,
-                        onImageClick = { fullscreenLink = it },
+                        onImageClick = onImageClick,
                     )
                     HorizontalDivider()
                 }
             }
         }
-    }
-
-    fullscreenLink?.let { link ->
-        FullscreenImage(
-            link = link,
-            onDismiss = { fullscreenLink = null },
-        )
     }
 }
