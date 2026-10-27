@@ -37,6 +37,7 @@ fun ChatView(
     onBackToChannels: () -> Unit,
     onImageClick: (String) -> Unit,
     modifier: Modifier = Modifier,
+    showBackButton: Boolean = true,
 ) {
     val messages by vm.messages.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
@@ -69,8 +70,10 @@ fun ChatView(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            TextButton(onClick = onBackToChannels) {
-                Text(stringResource(R.string.back_to_chat))
+            if (showBackButton) {
+                TextButton(onClick = onBackToChannels) {
+                    Text(stringResource(R.string.back_to_chat))
+                }
             }
             Text(
                 text = channelName,

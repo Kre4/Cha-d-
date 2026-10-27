@@ -14,12 +14,14 @@ fun ChannelsView(
     vm: ChannelsViewModel,
     onChannelClick: (String) -> Unit,
     modifier: Modifier = Modifier,
+    selectedChannel: String? = null,
 ) {
     val channels by vm.channels.collectAsStateWithLifecycle(emptyList())
     LazyColumn(modifier) {
         items(channels) { item ->
             Channel(
                 name = item,
+                selected = item == selectedChannel,
                 onClick = { onChannelClick(item) },
             )
             HorizontalDivider()
