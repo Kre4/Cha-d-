@@ -20,8 +20,6 @@ class ChatViewModel(
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
     val messages: StateFlow<List<Message>> = _messages.asStateFlow()
 
-    private var hasMore = true
-
     init {
         loadInitial()
     }
@@ -34,7 +32,6 @@ class ChatViewModel(
                 reverse = true,
             )
             _messages.value = page.sortedBy { it.id }
-            hasMore = page.size >= PAGE_SIZE
         }
     }
 
@@ -47,13 +44,10 @@ class ChatViewModel(
                 lastKnownId = oldestId,
                 reverse = true,
             )
-            if (page.isEmpty()) {
-                hasMore = false
-            } else {
+            if (page.isNotEmpty()) {
                 _messages.value = (page + _messages.value)
                     .distinctBy { it.id }
                     .sortedBy { it.id }
-                hasMore = page.size >= PAGE_SIZE
             }
         }
     }
